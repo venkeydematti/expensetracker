@@ -11,7 +11,8 @@ export default function EditExpenseModal({
   const [form, setForm] = useState({
     title: "",
     category: "",
-    price: "",
+    amount: "",
+    date: "",
   });
 
   const [error, setError] = useState("");
@@ -22,7 +23,8 @@ export default function EditExpenseModal({
     setForm({
       title: expense.title,
       category: expense.category,
-      price: String(expense.price),
+      amount: String(expense.amount),
+      date: expense.date?.split("T")[0] || "",
     });
 
     setError("");
@@ -54,18 +56,19 @@ export default function EditExpenseModal({
 
     const title = form.title.trim();
     const category = form.category.trim();
-    const priceNum = Number(form.price);
+    const amountNum = Number(form.amount);
 
     if (!title) return setError("Title required");
     if (!category) return setError("Category required");
-    if (!Number.isFinite(priceNum) || priceNum <= 0)
+    if (!Number.isFinite(amountNum) || amountNum <= 0)
       return setError("Invalid amount");
 
     onSave({
       ...expense,
       title,
       category,
-      price: priceNum,
+      amount: amountNum,
+      date: new Date(form.date).toISOString(),
     });
 
     onClose();
@@ -77,48 +80,38 @@ export default function EditExpenseModal({
         <h3 className="font-semibold text-lg">Edit Expense</h3>
 
         <form onSubmit={handleSubmit} className="space-y-3">
-          <input
-            name="title"
-            value={form.title}
-            onChange={handleChange}
-            className="w-full border px-3 py-2 rounded-lg"
-          />
+          <input name="title" value={form.title} onChange={handleChange} className="w-full border px-3 py-2 rounded-lg" />
 
-          <select
-            name="category"
-            value={form.category}
-            onChange={handleChange}
-            className="w-full border px-3 py-2 rounded-lg"
-          >
+          <select name="category" value={form.category} onChange={handleChange} className="w-full border px-3 py-2 rounded-lg">
             {categories.map((c) => (
               <option key={c}>{c}</option>
             ))}
           </select>
 
           <input
-            name="price"
-            value={form.price}
+            name="amount"
+            type="number"
+            value={form.amount}
             onChange={handleChange}
             className="w-full border px-3 py-2 rounded-lg"
           />
 
-          {error && (
-            <div className="text-red-500 text-sm">{error}</div>
-          )}
+          <input
+            name="date"
+            type="date"
+            value={form.date}
+            onChange={handleChange}
+            className="w-full border px-3 py-2 rounded-lg"
+          />
+
+          {error && <div className="text-red-500 text-sm">{error}</div>}
 
           <div className="flex justify-end gap-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="border px-3 py-1 rounded"
-            >
+            <button type="button" onClick={onClose} className="border px-3 py-1 rounded">
               Cancel
             </button>
 
-            <button
-              type="submit"
-              className="bg-gray-900 text-white px-3 py-1 rounded"
-            >
+            <button type="submit" className="bg-gray-900 text-white px-3 py-1 rounded">
               Save
             </button>
           </div>

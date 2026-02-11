@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import useExpenseManager from "../hooks/useExpenseManager";
 import SummaryCards from "./SummaryCards";
 import ExpenseTable from "./ExpenseTable";
@@ -10,7 +11,7 @@ import EditExpenseModal from "./EditExpenseModal";
 
 export default function ExpenseDashboard() {
   const manager = useExpenseManager();
-
+  const [dateFilter, setDateFilter] = useState("all");
   if (!manager.mounted)
     return <div className="p-6">Loading dashboard...</div>;
 

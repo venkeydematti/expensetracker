@@ -14,6 +14,15 @@ export default function ExpenseTable({
     const toggleSort = () => {
       setSortDir((prev) => (prev === "asc" ? "desc" : "asc"));
     };
+
+    const formatDate = (isoDate) => {
+      if (!isoDate) return "-";
+      return new Date(isoDate).toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      });
+    };
   
     return (
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 space-y-4">
@@ -52,6 +61,7 @@ export default function ExpenseTable({
             <tr className="border-b">
               <th className="py-2">Title</th>
               <th>Category</th>
+              <th>Date</th>
               <th>Amount</th>
               <th>Action</th>
             </tr>
@@ -62,7 +72,8 @@ export default function ExpenseTable({
               <tr key={e.id} className="border-b">
                 <td className="py-2">{e.title}</td>
                 <td>{e.category}</td>
-                <td>₹{e.price}</td>
+                <td>{formatDate(e.date)}</td>
+                <td>₹{e.amount}</td>
                 <td className="space-x-2">
                   <button
                     onClick={() => onEdit(e.id)}
@@ -81,12 +92,14 @@ export default function ExpenseTable({
               </tr>
             ))}
   
-            <tr>
-              <th className="py-2">Total</th>
-              <th></th>
-              <th>₹{total}</th>
-              <th></th>
+            <tr className="font-semibold text-gray-800">
+              <td>Total</td>
+              <td></td>
+              <td></td>
+              <td>₹{total}</td>
+              <td></td>
             </tr>
+
           </tbody>
         </table>
       </div>

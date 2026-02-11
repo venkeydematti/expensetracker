@@ -17,7 +17,6 @@ export default function useExpenseManager() {
   const [searchText, setSearchText] = useState("");
   const [editingId, setEditingId] = useState(null);
 
-  // Load from localStorage safely
   useEffect(() => {
     const savedExpenses = localStorage.getItem(EXPENSES_KEY);
     const savedCategories = localStorage.getItem(CATEGORIES_KEY);
@@ -49,19 +48,26 @@ export default function useExpenseManager() {
         return matchCategory && matchSearch;
       })
       .sort((a, b) =>
-        sortDir === "asc" ? a.price - b.price : b.price - a.price
+        sortDir === "asc" ? a.amount - b.amount : b.amount - a.amount
       );
   }, [expenses, filterCategory, sortDir, searchText]);
 
   const total = useMemo(
-    () => visibleExpenses.reduce((sum, e) => sum + e.price, 0),
+    () => visibleExpenses.reduce((sum, e) => sum + e.amount, 0),
     [visibleExpenses]
   );
 
-  const addExpense = ({ title, category, price }) => {
+  const addExpense = ({ title, category, amount, date }) => {
     setExpenses((prev) => [
       ...prev,
-      { id: crypto.randomUUID(), title, category, price },
+      {
+        id: crypto.randomUUID(),
+        title,
+        category,
+        amount,
+        date,
+        createdAt: Date.now(),
+      },
     ]);
 
     setCategories((prev) =>
@@ -79,6 +85,11 @@ export default function useExpenseManager() {
     );
   };
 
+  const editingExpense = useMemo(
+    () => expenses.find((e) => e.id === editingId) || null,
+    [editingId, expenses]
+  );
+
   return {
     mounted,
     expenses,
@@ -93,6 +104,7 @@ export default function useExpenseManager() {
     setSearchText,
     editingId,
     setEditingId,
+    editingExpense,
     addExpense,
     deleteExpense,
     updateExpense,

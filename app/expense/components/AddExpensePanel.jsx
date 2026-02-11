@@ -2,10 +2,14 @@
 import { useState } from "react";
 
 export default function AddExpensePanel({ categories, onAdd }) {
+
+  const today = new Date().toISOString().split("T")[0];
+
   const [form, setForm] = useState({
     title: "",
     category: "",
-    price: "",
+    amount: "",
+    date: today,
   });
 
   const [error, setError] = useState("");
@@ -23,19 +27,28 @@ export default function AddExpensePanel({ categories, onAdd }) {
 
     const title = form.title.trim();
     const category = form.category.trim();
-    const priceNum = Number(form.price);
+    const amountNum = Number(form.amount);
 
     if (!title) return setError("Title required");
     if (!category) return setError("Select category");
-    if (!Number.isFinite(priceNum) || priceNum <= 0)
+    if (!form.date) return setError("Select date");
+    
+    if (!Number.isFinite(amountNum) || amountNum <= 0)
       return setError("Invalid amount");
 
-    onAdd({ title, category, price: priceNum });
+    onAdd({
+      title,
+      category,
+      amount: amountNum,
+      date: new Date(form.date).toISOString(),
+    });
+    
 
     setForm({
       title: "",
       category: "",
-      price: "",
+      amount: "",
+      date: today,
     });
   };
 
@@ -65,12 +78,29 @@ export default function AddExpensePanel({ categories, onAdd }) {
         </select>
 
         <input
-          name="price"
+          name="amount"
           placeholder="Amount"
-          value={form.price}
+          value={form.amount}
           onChange={handleChange}
           className="w-full border rounded-lg px-3 py-2"
+          type="number"
+          min="0"
+          step="0.01"
+          required
+          inputMode="decimal"
+          pattern="\d+(\.\d{1,2})?"
+          title="Please enter a valid amount (e.g. 10.50)"
+          aria-invalid={error ? "true" : "false"}
+          aria-describedby={error ? "amount-error" : undefined}
         />
+
+        <input
+            type="date"
+            name="date"
+            value={form.date}
+            onChange={handleChange}
+            className="w-full border rounded-lg px-3 py-2"
+          />
 
         {error && (
           <div className="text-sm text-red-500">{error}</div>

@@ -5,4 +5,5 @@ export default [
     "Electronics",
     "Home&Furniture",
     "Bakery",
+    "Others",
   ];
